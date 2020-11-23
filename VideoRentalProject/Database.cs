@@ -11,23 +11,8 @@ namespace VideoRentalProject
     public class Database
     {
         string ConnectionString = @"Data Source=LAPTOP-AUOD8AI9\SQLEXPRESS;Initial Catalog=VideoRental;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
-
-        public ConnectionState DBStatus()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Testing.DBTestClass.ConnectionState GetDBStatus()
-        {
-            throw new NotImplementedException();
-        }
-
         SqlConnection Connection;
 
-        public string ID;
-
-        public Database CustomerTable { get; private set; }
-        public Database MovieTable { get; private set; }
 
         public Database()
         {
@@ -36,7 +21,7 @@ namespace VideoRentalProject
 
 
 
-        public Database LoadBt()
+        public DataTable LoadBt()
         {
             Connection.Open();
 
@@ -68,10 +53,46 @@ namespace VideoRentalProject
 
             Connection.Close();
 
-            return CustomerTable;
+           
+            return CustomersTable;
         }
 
-        public Database MovieBt()
+        public DataTable RentalBt()
+        {
+            Connection.Open();
+
+            DataTable CustomersTable = new DataTable();
+
+            CustomersTable.Clear();
+
+            CustomersTable.Columns.Add("RMID");
+            CustomersTable.Columns.Add("MovieIDFK");
+            CustomersTable.Columns.Add("CustIDFK");
+            CustomersTable.Columns.Add("DateRented");
+            CustomersTable.Columns.Add("DateReturned");
+
+            string query = "SELECT * FROM RentedMovies";
+
+            SqlCommand command = new SqlCommand(query, Connection);
+            SqlDataReader reader = command.ExecuteReader();
+
+            while (reader.Read())
+            {
+                CustomersTable.Rows.Add(
+                    reader["RMID"],
+                    reader["MovieIDFK"],
+                    reader["CustIDFK"],
+                    reader["DateRented"],
+                    reader["DateReturned"]
+                    );
+            }
+
+            Connection.Close();
+
+            return CustomersTable;
+        }
+
+        public DataTable MovieBt()
         {
             Connection.Open();
 
@@ -109,7 +130,8 @@ namespace VideoRentalProject
 
             Connection.Close();
 
-            return MovieTable;
+           
+            return MoviesTable;
         }
 
        
@@ -153,16 +175,6 @@ namespace VideoRentalProject
             Connection.Close();
         }
 
-        internal void ADDBt(string text1, string text2, string text3, string text4, string text5, string text6, string text7, string text8)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal void IssueMovie(string text1, string text2)
-        {
-            throw new NotImplementedException();
-        }
-
         public void ADDBt(string Rating, string Title, string Year, string Rental_Cost, string Copies, string Plot, string Genre)
         {
             Connection.Open();
@@ -186,19 +198,95 @@ namespace VideoRentalProject
             Connection.Close();
         }
 
-        internal string PopularCustomer()
+       
+
+        public void IssueMovie(string movieIDFK, string custIDFK)
         {
-            throw new NotImplementedException();
+            Connection.Open();
+
+            string query = "INSERT INTO RentedMovies (MovieIDFK, CustIDFK, DateRented)" +
+                    "VALUES(@MovieIDFK, @CustIDFK, @DateRented)";
+
+            using (SqlCommand command = new SqlCommand(query, Connection))
+            {
+                command.Parameters.AddWithValue("@MovieIDFK", movieIDFK);
+                command.Parameters.AddWithValue("@CustIDFK", custIDFK);
+                command.Parameters.AddWithValue("@DateRented", DateTime.Now);
+
+                command.ExecuteNonQuery();
+            }
+
+            Connection.Close();
         }
 
-        internal string PopularMovie()
+       
+
+        public string PopularCustomer()
         {
-            throw new NotImplementedException();
+            Connection.Open();
+
+            string query = "SELECT CustIDFK, COUNT(*) AS Rep FROM RentedMovies GROUP BY CustIDFK ORDER BY Rep DESC";
+
+            SqlCommand command = new SqlCommand(query, Connection);
+
+            var result = command.ExecuteScalar().ToString();
+
+            Connection.Close();
+
+            Connection.Open();
+
+            Console.WriteLine(result);
+
+            query = "SELECT FirstName, LastName FROM Customer WHERE CustID = " + result;
+
+            command = new SqlCommand(query, Connection);
+
+            SqlDataReader reader = command.ExecuteReader();
+
+            string output = "";
+
+            while (reader.Read())
+            {
+                output = reader["FirstName"].ToString();
+                output += " ";
+                output += reader["LastName"].ToString();
+            }
+
+            Connection.Close();
+
+            return output;
         }
 
-        internal void ReturnMovie(string rMID)
+        public string PopularMovie()
         {
-            throw new NotImplementedException();
+            Connection.Open();
+
+            string query = "SELECT MovieIDFK, COUNT(*) AS Rep FROM RentedMovies GROUP BY MovieIDFK ORDER BY Rep DESC";
+
+            SqlCommand command = new SqlCommand(query, Connection);
+
+            var result = command.ExecuteScalar().ToString();
+
+            Connection.Close();
+
+            return result;
+        }
+
+        public void ReturnMovie(string rMID)
+        {
+            Connection.Open();
+
+            string query = "UPDATE RentedMovies set DateReturned=@DateReturned Where RMID = @RMID";
+
+            using (SqlCommand command = new SqlCommand(query, Connection))
+            {
+                command.Parameters.Add("@RMID", SqlDbType.NVarChar).Value = rMID;
+                command.Parameters.Add("@DateReturned", SqlDbType.DateTime).Value = DateTime.Now;
+
+                command.ExecuteNonQuery();
+            }
+
+            Connection.Close();
         }
 
         public void UpdateMovie(string ID, string Rating, string Title, string Year, string Rental_Cost, string Copies, string Plot, string Genre)
@@ -249,7 +337,8 @@ namespace VideoRentalProject
             Connection.Close();
         }
 
-        public ConnectionState DatabaseStatus()
+       
+        public ConnectionState DBStatus()
         {
             return Connection.State;
         }
