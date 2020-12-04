@@ -12,22 +12,18 @@ namespace VideoRentalProject
     {
         string ConnectionString = @"Data Source=LAPTOP-AUOD8AI9\SQLEXPRESS;Initial Catalog=VideoRental;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
         SqlConnection Connection;
-
-
+        //This link used for store Data in database
         public Database()
         {
             Connection = new SqlConnection(ConnectionString);
         }
-
-
-
-        public DataTable LoadBt()
+        public DataTable LoadBt()//After clicking it will show Customer data
         {
-            Connection.Open();
+            Connection.Open();//opening the connection
 
             DataTable CustomersTable = new DataTable();
 
-            CustomersTable.Clear();
+            CustomersTable.Clear();//customer table
 
             CustomersTable.Columns.Add("CustID");
             CustomersTable.Columns.Add("FirstName");
@@ -51,23 +47,23 @@ namespace VideoRentalProject
                     );
             }
 
-            Connection.Close();
+            Connection.Close();// closing the connection
 
            
-            return CustomersTable;
+            return CustomersTable;// all data will return to customer table 
         }
 
-        public DataTable RentalBt()
+        public DataTable RentalBt()//After clicking it will show Rented Movies data
         {
-            Connection.Open();
+            Connection.Open();//opening connection
 
             DataTable CustomersTable = new DataTable();
 
-            CustomersTable.Clear();
+            CustomersTable.Clear();// cuustomer table
 
             CustomersTable.Columns.Add("RMID");
-            CustomersTable.Columns.Add("MovieIDFK");
-            CustomersTable.Columns.Add("CustIDFK");
+            CustomersTable.Columns.Add("MovieIDFK");//movie id is foreign key
+            CustomersTable.Columns.Add("CustIDFK");//customer id is foreign key
             CustomersTable.Columns.Add("DateRented");
             CustomersTable.Columns.Add("DateReturned");
 
@@ -87,18 +83,18 @@ namespace VideoRentalProject
                     );
             }
 
-            Connection.Close();
+            Connection.Close();// closeing connection
 
-            return CustomersTable;
+            return CustomersTable;//all data will return to customer table
         }
 
-        public DataTable MovieBt()
+        public DataTable MovieBt()//After clicking it will show Movies data
         {
-            Connection.Open();
+            Connection.Open();// opening connection
 
             DataTable MoviesTable = new DataTable();
 
-            MoviesTable.Clear();
+            MoviesTable.Clear();//movies table
 
             MoviesTable.Columns.Add("MovieID");
             MoviesTable.Columns.Add("Rating");
@@ -128,24 +124,24 @@ namespace VideoRentalProject
                     );
             }
 
-            Connection.Close();
+            Connection.Close();//closeing connection
 
            
-            return MoviesTable;
+            return MoviesTable;//all data will return back to movies table
         }
 
-       
 
-        public void AddCustomer(string fname, string lname, string phone, string address)
+        //After clicking it will add Customer data
+        public void AddCustomer(string fname, string lname, string phone, string address)// using datatype string
         {
-            Connection.Open();
+            Connection.Open();//opening connection
 
             string query = "INSERT INTO Customer (FirstName, LastName, Phone, Address) " +
                     "VALUES(@FirstName, @LastName, @Phone, @Address);";
 
             using (SqlCommand command = new SqlCommand(query, Connection))
             {
-                command.Parameters.Add("@FirstName", SqlDbType.NVarChar).Value = fname;
+                command.Parameters.Add("@FirstName", SqlDbType.NVarChar).Value = fname;// using datatype nvarchar
                 command.Parameters.Add("@LastName", SqlDbType.NVarChar).Value = lname;
                 command.Parameters.Add("@Phone", SqlDbType.NVarChar).Value = phone;
                 command.Parameters.Add("@Address", SqlDbType.NVarChar).Value = address;
@@ -153,10 +149,10 @@ namespace VideoRentalProject
                 command.ExecuteNonQuery();
             }
 
-            Connection.Close();
+            Connection.Close();// closeing connection
         }
-
-        public void UpdateCustomer(string id, string fname, string lname, string phone, string address)
+        //After clicking it will Update Customer detail
+        public void UpdateCustomer(string id, string fname, string lname, string phone, string address)// using datatype string
         {
             Connection.Open();
 
@@ -172,12 +168,12 @@ namespace VideoRentalProject
                 command.ExecuteNonQuery();
             }
 
-            Connection.Close();
+            Connection.Close();//closeing connection
         }
-
-        public void ADDBt(string Rating, string Title, string Year, string Rental_Cost, string Copies, string Plot, string Genre)
+        //After clicking it will Add Customer detail
+        public void ADDBt(string Rating, string Title, string Year, string Rental_Cost, string Copies, string Plot, string Genre)// using datatype string
         {
-            Connection.Open();
+            Connection.Open();//opening connection
 
             string query = "INSERT INTO Movies (Rating, Title,  Year, Rental_Cost,Copies, Plot, Genre) " +
                     "VALUES(@Rating, @Title,  @Year, @Rental_Cost, @Copies, @Plot, @Genre);";
@@ -195,14 +191,14 @@ namespace VideoRentalProject
                 command.ExecuteNonQuery();
             }
 
-            Connection.Close();
+            Connection.Close();//closeing connection
         }
 
-       
 
-        public void IssueMovie(string movieIDFK, string custIDFK)
+        //After clicking it will show issued movie
+        public void IssueMovie(int movieIDFK, int custIDFK)// using datatype string, movie id and customer id as a foreign key 
         {
-            Connection.Open();
+            Connection.Open(); //opening connection
 
             string query = "INSERT INTO RentedMovies (MovieIDFK, CustIDFK, DateRented)" +
                     "VALUES(@MovieIDFK, @CustIDFK, @DateRented)";
@@ -216,14 +212,14 @@ namespace VideoRentalProject
                 command.ExecuteNonQuery();
             }
 
-            Connection.Close();
+            Connection.Close(); //close the connection
         }
 
-       
 
+        //After clicking it will show Popular customer Name 
         public string PopularCustomer()
         {
-            Connection.Open();
+            Connection.Open();//open the connection
 
             string query = "SELECT CustIDFK, COUNT(*) AS Rep FROM RentedMovies GROUP BY CustIDFK ORDER BY Rep DESC";
 
@@ -231,9 +227,9 @@ namespace VideoRentalProject
 
             var result = command.ExecuteScalar().ToString();
 
-            Connection.Close();
+            Connection.Close();//close the connection
 
-            Connection.Open();
+            Connection.Open();//open the connection
 
             Console.WriteLine(result);
 
@@ -252,14 +248,14 @@ namespace VideoRentalProject
                 output += reader["LastName"].ToString();
             }
 
-            Connection.Close();
+            Connection.Close();//close the connection
 
             return output;
         }
-
+        //After clicking it will show popular movie ID
         public string PopularMovie()
         {
-            Connection.Open();
+            Connection.Open();//open the connection
 
             string query = "SELECT MovieIDFK, COUNT(*) AS Rep FROM RentedMovies GROUP BY MovieIDFK ORDER BY Rep DESC";
 
@@ -267,14 +263,14 @@ namespace VideoRentalProject
 
             var result = command.ExecuteScalar().ToString();
 
-            Connection.Close();
+            Connection.Close();//close the connection
 
-            return result;
+            return result;// the result will show in output
         }
-
-        public void ReturnMovie(string rMID)
+        //After clicking it will show Return movie 
+        public void ReturnMovie(string rMID)// using datatype string
         {
-            Connection.Open();
+            Connection.Open();//open the connection
 
             string query = "UPDATE RentedMovies set DateReturned=@DateReturned Where RMID = @RMID";
 
@@ -286,12 +282,12 @@ namespace VideoRentalProject
                 command.ExecuteNonQuery();
             }
 
-            Connection.Close();
+            Connection.Close();//close the connection
         }
-
-        public void UpdateMovie(string ID, string Rating, string Title, string Year, string Rental_Cost, string Copies, string Plot, string Genre)
+        //After clicking it will update new movie
+        public void UpdateMovie(string ID, string Rating, string Title, string Year, string Rental_Cost, string Copies, string Plot, string Genre)// using datatype string, movie id and customer id as a foreign key 
         {
-            Connection.Open();
+            Connection.Open();//open the connection
 
             string query = "UPDATE Movie SET Rating = @Rating, Title = @Title, Year = @Year, Rental_Cost = @Rental_Cost, Copies = @Copies,  Plot = @Plot, Genre = @Genre WHERE MovieID = " + ID + "; ";
 
@@ -308,12 +304,12 @@ namespace VideoRentalProject
                 command.ExecuteNonQuery();
             }
 
-            Connection.Close();
+            Connection.Close();//close the connection
         }
-
+        //After clicking it will Delete movie
         public void DeleteMovie(object ID)
         {
-            Connection.Open();
+            Connection.Open();//open the connection
 
             string query = "DELETE Movie WHERE MovieID = " + ID;
 
@@ -321,12 +317,12 @@ namespace VideoRentalProject
 
             command.ExecuteNonQuery();
 
-            Connection.Close();
+            Connection.Close();//close the connection
         }
-
-        public void DeleteCustomer(string id)
+        //After clicking it will delete customer
+        public void DeleteCustomer(string id)// using datatype string
         {
-            Connection.Open();
+            Connection.Open();//open the connection
 
             string query = "DELETE Customer WHERE CustID = " + id;
 
@@ -334,7 +330,7 @@ namespace VideoRentalProject
 
             command.ExecuteNonQuery();
 
-            Connection.Close();
+            Connection.Close();//close the connection
         }
 
        
