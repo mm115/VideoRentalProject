@@ -196,9 +196,9 @@ namespace VideoRentalProject
 
 
         //After clicking it will show issued movie
-        public void IssueMovie(int movieIDFK, int custIDFK)// using datatype string, movie id and customer id as a foreign key 
+        public void IssueMovie(string movieIDFK, string custIDFK)// using datatype string, movie id and customer id as a foreign key 
         {
-            Connection.Open(); //opening connection
+            Connection.Open();//opening connection
 
             string query = "INSERT INTO RentedMovies (MovieIDFK, CustIDFK, DateRented)" +
                     "VALUES(@MovieIDFK, @CustIDFK, @DateRented)";
@@ -212,7 +212,7 @@ namespace VideoRentalProject
                 command.ExecuteNonQuery();
             }
 
-            Connection.Close(); //close the connection
+            Connection.Close();//close the connection
         }
 
 
