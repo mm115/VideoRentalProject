@@ -113,6 +113,10 @@ namespace VideoRentalProject
         }
         private void CustomerGrid_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
+          
+        }
+        private void MainGrid_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
             int index = e.RowIndex;
             DataGridViewRow row = MainGrid.Rows[index];
 
